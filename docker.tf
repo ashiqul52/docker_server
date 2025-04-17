@@ -11,7 +11,7 @@ terraform {
     dynamodb_table = "app-state"
     key    = "LockID"
     region = "us-east-1"
-    profile = "ashiq-realcloud"
+    profile = "ashiq"
   }
 }
 
@@ -54,6 +54,14 @@ resource "aws_security_group" "ec2_security_group" {
     cidr_blocks      = ["0.0.0.0/0"]
   }
 
+  ingress {
+    description      = "http proxy access"
+    from_port        = 8085
+    to_port          = 8085
+    protocol         = "tcp"
+    cidr_blocks      = ["0.0.0.0/0"]
+  }
+
   # allow access on port 22
   ingress {
     description      = "ssh access"
@@ -79,6 +87,36 @@ resource "aws_security_group" "ec2_security_group" {
     cidr_blocks      = ["0.0.0.0/0"]
   }
 
+  ingress {
+    description      = "http customport access"
+    from_port        = 9003
+    to_port          = 9003
+    protocol         = "tcp"
+    cidr_blocks      = ["0.0.0.0/0"]
+  }
+
+ingress {
+    description      = "http customport access"
+    from_port        = 3000
+    to_port          = 3000
+    protocol         = "tcp"
+    cidr_blocks      = ["0.0.0.0/0"]
+  }
+
+  ingress {
+    description      = "http customport access"
+    from_port        = 8090
+    to_port          = 8090
+    protocol         = "tcp"
+    cidr_blocks      = ["0.0.0.0/0"]
+  }
+  ingress {
+    description      = "http customport access"
+    from_port        = 8070
+    to_port          = 8070
+    protocol         = "tcp"
+    cidr_blocks      = ["0.0.0.0/0"]
+  }
   egress {
     from_port        = 0
     to_port          = 0
@@ -116,7 +154,7 @@ resource "aws_instance" "ec2_instance1" {
   instance_type          = "t2.micro"
   subnet_id              = aws_default_subnet.default_az1.id
   vpc_security_group_ids = [aws_security_group.ec2_security_group.id]
-  key_name               = "ashiq"
+  key_name               = "akanjiKP"
   user_data            = "${file("docker-install.sh")}"
 
   tags = {
@@ -125,6 +163,6 @@ resource "aws_instance" "ec2_instance1" {
 }
 
 # print the url of the docker server
-output "website_url" {
+output "docker_ipaddress" {
   value     = join ("", ["http://", aws_instance.ec2_instance1.public_ip])
 }
